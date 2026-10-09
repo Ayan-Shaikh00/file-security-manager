@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · File Security Manager{% endblock %}
+{% block content %}
+<div class="grid md:grid-cols-3 gap-4 mb-8">
+  <form action="{{ url_for('encrypt') }}" method="post" enctype="multipart/form-data"
+        class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+    <h2 class="font-medium text-cyan-400">Encrypt</h2>
+    <p class="text-xs text-slate-400">AES-256-GCM. Remember this password; it is not stored.</p>
+    <input type="file" name="file" required class="block w-full text-sm file:mr-3 file:rounded file:border-0 file:bg-slate-800 file:px-3 file:py-1" />
+    <input name="password" type="password" required placeholder="File password" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm" />
+    <button class="w-full bg-cyan-500 text-slate-950 rounded-lg py-2 text-sm font-medium">Encrypt &amp; download</button>
+  </form>
+
+  <form action="{{ url_for('decrypt') }}" method="post" enctype="multipart/form-data"
+        class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+    <h2 class="font-medium text-cyan-400">Decrypt</h2>
+    <p class="text-xs text-slate-400">Upload a <code>.fsm</code> file and the same password.</p>
+    <input type="file" name="file" required class="block w-full text-sm file:mr-3 file:rounded file:border-0 file:bg-slate-800 file:px-3 file:py-1" />
+    <input name="password" type="password" required placeholder="File password" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm" />
+    <button class="w-full bg-cyan-500 text-slate-950 rounded-lg py-2 text-sm font-medium">Decrypt &amp; download</button>
+  </form>
+
+  <form action="{{ url_for('file_hash') }}" method="post" enctype="multipart/form-data"
+        class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+    <h2 class="font-medium text-cyan-400">SHA-256 hash</h2>
+    <p class="text-xs text-slate-400">Integrity check. Optional: paste expected hash to verify.</p>
+    <input type="file" name="file" required class="block w-full text-sm file:mr-3 file:rounded file:border-0 file:bg-slate-800 file:px-3 file:py-1" />
+    <input name="expected" placeholder="Expected hash (optional)" class="w-full rounded-lg bg-slate-950 border border-slate-700 px-3 py-2 text-sm" />
+    <button class="w-full bg-cyan-500 text-slate-950 rounded-lg py-2 text-sm font-medium">Generate hash</button>
+  </form>
+</div>
+
+{% if hash_result %}
+<div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-8">
+  <h2 class="font-medium mb-2">Hash result</h2>
+  <p class="text-sm text-slate-400 mb-1">{{ hash_file }}</p>
+  <p class="font-mono text-xs break-all bg-slate-950 p-3 rounded-lg">{{ hash_result }}</p>
+  {% if hash_match is not none %}
+    {% if hash_match %}
+      <p class="mt-3 text-emerald-400 text-sm">Hash matches. File is unchanged.</p>
+    {% else %}
+      <p class="mt-3 text-red-400 text-sm">Hash does not match. File may be tampered.</p>
+    {% endif %}
+  {% endif %}
+</div>
+{% endif %}
+
+<section class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+  <h2 class="font-medium mb-4">Activity log</h2>
+  {% if logs %}
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="text-left text-slate-400 border-b border-slate-800">
+        <tr>
+          <th class="py-2 pr-3">Time</th>
+          <th class="py-2 pr-3">Action</th>
+          <th class="py-2 pr-3">File</th>
+          <th class="py-2">Detail</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr class="border-b border-slate-800/70">
+          <td class="py-2 pr-3 whitespace-nowrap">{{ log.created_at }}</td>
+          <td class="py-2 pr-3">{{ log.action }}</td>
+          <td class="py-2 pr-3">{{ log.filename }}</td>
+          <td class="py-2 font-mono text-xs break-all">{{ log.detail }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-slate-400 text-sm">No activity yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

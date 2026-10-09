@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}File Security Manager{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ["Segoe UI", "system-ui", "sans-serif"] }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-100">
+  <div class="max-w-5xl mx-auto px-4 py-8">
+    <header class="flex items-center justify-between mb-8">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-cyan-400">Mini Project</p>
+        <h1 class="text-2xl font-semibold">File Security Manager</h1>
+      </div>
+      {% if session.username %}
+      <div class="flex items-center gap-4 text-sm">
+        <span class="text-slate-400">{{ session.username }}</span>
+        <a href="{{ url_for('logout') }}" class="text-cyan-400 hover:underline">Logout</a>
+      </div>
+      {% endif %}
+    </header>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2 mb-6">
+          {% for category, message in messages %}
+            <p class="rounded-lg px-4 py-3 text-sm
+              {% if category == 'error' %}bg-red-950 text-red-200 border border-red-800
+              {% else %}bg-emerald-950 text-emerald-200 border border-emerald-800{% endif %}">
+              {{ message }}
+            </p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</body>
+</html>
