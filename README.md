@@ -11,7 +11,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open http://127.0.0.1:5000
+Open https://file-security-manager.onrender.com/login
 
 1. Register → Login
 2. Encrypt a file with a password (downloads `.fsm`)
